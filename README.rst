@@ -9,6 +9,7 @@ It provides a bootstrap script for the global python installation so you'll be a
 Installation
 ============
 You can install devenv-python using::
+
 	wget https://raw.github.com/thedrow/devenv-python/master/bootstrap.sh;bash bootstrap.sh;
 
 or if you already have curl installed::
