@@ -8,8 +8,8 @@ It provides a bootstrap script for the global python installation so you'll be a
 ============
 Installation
 ============
-| wget https://raw.github.com/thedrow/devenv-python/master/bootstrap.sh;bash bootstrap.sh;
+	wget https://raw.github.com/thedrow/devenv-python/master/bootstrap.sh;bash bootstrap.sh;
 
 or if you already have curl installed
 
-| curl -kL https://raw.github.com/thedrow/devenv-python/master/bootstrap.sh | bash
+	curl -kL https://raw.github.com/thedrow/devenv-python/master/bootstrap.sh | bash
