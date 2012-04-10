@@ -5,29 +5,28 @@ set -o pipefail
 
 # Pythonbrew utilities
 
-# Sets the PYTHONBREW_PATH to default if it does not exist
-if [[ -z "$PYTHONBREW_PATH" ]]
-then
-	readonly PYTHONBREW_PATH="$HOME/.pythonbrew/"
-fi
-
-readonly PYTHONBREW_ETC="${PYTHONBREW_PATH}etc/bashrc"
-echo $PYTHONBREW_ETC
 # Detects if pythonbrew is installed
-if [[ -s $PYTHONBREW_PATH ]]
+if [[ -s $PYTHONBREW_ROOT ]]
 then
 	readonly IS_PYTHONBREW_INSTALLED=1
+elif [[ -s $HOME/.pythonbrew/etc/bashrc ]]
+then
+	readonly IS_PYTHONBREW_INSTALLED=1
+	readonly PYTHONBREW_ROOT='$HOME/.pythonbrew'
 else
 	readonly IS_PYTHONBREW_INSTALLED=0
+	readonly PYTHONBREW_ROOT='$HOME/.pythonbrew'
 fi
 
-[[ -s $HOME/.pythonbrew/etc/bashrc ]] && source $HOME/.pythonbrew/etc/*
+readonly PYTHONBREW_ETC="${PYTHONBREW_ROOT}/etc"
+
+[[ -s $PYTHONBREW_ETC ]] && source $PYTHONBREW_ETC/*
 
 function deactivate_pythonbrew()
 {
 	if [ $IS_PYTHONBREW_INSTALLED == 1 ]
 	then
-		echo "Pythonbrew installation found at $PYTHONBREW_PATH"
+		echo "Pythonbrew installation found at $PYTHONBREW_ROOT"
 
 		pythonbrew_version="$(pythonbrew --version 2>&1)"
 		echo "Pythonbrew $pythonbrew_version found."
@@ -39,6 +38,16 @@ function deactivate_pythonbrew()
 		echo "Current python version after pythonbrew deactivation is $(python -V 2>&1)"
 	else
 		echo "Pythonbrew is not installed. Skipping."
+	fi
+}
+
+function install_pythonbrew()
+{
+	if [ $IS_PYTHONBREW_INSTALLED == 0 ]
+	then
+		curl -kL http://xrl.us/pythonbrewinstall | bash
+		append_if_not_found "[[ -s $PYTHONBREW_ROOT/etc/bashrc ]] && source $PYTHONBREW_ROOT/etc/*"
+		append_if_not_found 'export PYTHONBREW_ROOT=$HOME/.pythonbrew/'
 	fi
 }
 
@@ -172,6 +181,9 @@ append_if_not_found 'export PIP_RESPECT_VIRTUALENV=true'
 append_if_not_found 'export PIP_REQUIRE_VIRTUALENV=true'
 append_if_not_found 'export PIP_VIRTUALENV_BASE=$WORKON_HOME'
 append_if_not_found 'source /usr/local/bin/virtualenvwrapper.sh'
+
+install_pythonbrew
+
 source ~/.bashrc
 mkdir -p $WORKON_HOME
 
