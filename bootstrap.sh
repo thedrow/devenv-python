@@ -118,13 +118,23 @@ do
 			print_packages
 			exit 0
 			;;
-		--no-pip | --no-virtualenv | --no-distribute)
-			package=${1#--no-}
-			echo "$package is required."
-			exit 1
+		--no-pip | --no-distribute)
+			if [[ -z "$(pip --version 2>&1)" ]]
+			then
+				package=${1#--no-}
+				echo "$package is required."
+				exit 1
+			else
+				$skip_pip = 1
+			fi
 			;;
 		-u | --update)
 			$update = '-U'
+			;;
+		--no-virtualenv)
+			package=${1#--no-}
+			echo "$package is required."
+			exit 1
 			;;
 		--no-*)
 			package=${1#--no-}
@@ -171,8 +181,12 @@ echo '=================================='
 mkdir -p .devenv_temp
 cd .devenv_temp
 
-download_and_install $DISTRIBUTE
-download_and_install $PIP
+if [[ $skip_pip != 1 ]]
+then
+
+	download_and_install $DISTRIBUTE
+	download_and_install $PIP
+fi
 
 echo '=================================='
 
