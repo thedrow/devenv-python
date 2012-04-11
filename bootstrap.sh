@@ -104,6 +104,8 @@ function print_packages()
 	echo "${#all_packages[@]} packages in total."
 }
 
+# Options parser
+
 while [ -n "$1" ]
 do
 	case $1 in
@@ -150,9 +152,12 @@ fi
 
 echo "Setting up $python_version essentials."
 
+# Removes duplicated packages that might have been added by --with-<package name>
 packages=($(printf '%s\n' "${packages[@]}" | sort -n | uniq))
+
 echo "Installing the following packages:"
 print_packages
+
 echo '=================================='
 
 apt_get 'curl'
@@ -175,11 +180,14 @@ do
 	wait
 done
 
+# Configuration
+
 append_if_not_found 'export VIRTUALENV_USE_DISTRIBUTE=true'
 append_if_not_found 'export WORKON_HOME=~/.virtualenvs'
 append_if_not_found 'export PIP_RESPECT_VIRTUALENV=true'
 append_if_not_found 'export PIP_REQUIRE_VIRTUALENV=true'
 append_if_not_found 'export PIP_VIRTUALENV_BASE=$WORKON_HOME'
+append_if_not_found 'export PIP_USE_MIRRORS=true'
 append_if_not_found 'source /usr/local/bin/virtualenvwrapper.sh'
 
 install_pythonbrew
