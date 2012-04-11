@@ -123,6 +123,9 @@ do
 			echo "$package is required."
 			exit 1
 			;;
+		-u | --update)
+			$update = '-U'
+			;;
 		--no-*)
 			package=${1#--no-}
 
@@ -176,7 +179,7 @@ echo '=================================='
 for package in ${packages[@]}
 do
 	echo "Installing $package"
-	sudo pip install $package
+	sudo pip install $update $package
 	wait
 done
 
